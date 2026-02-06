@@ -1,12 +1,25 @@
 import readline from 'readline';
 
-// Біологічне множення
+/**
+ * Biological multiplication: result = a + b + (a * b - 1).
+ * @param a - First operand.
+ * @param b - Second operand.
+ * @returns The computed value.
+ */
 function bioMult(a: number, b: number): number {
     return a + b + (a * b - 1);
 }
 
-// Супер ASCII-графік з координатними осями і адаптивним масштабом
-function drawAdvancedGraph(fixedA: number, minB: number, maxB: number, width: number = 60, height: number = 20) {
+/**
+ * Draws an ASCII graph with coordinate axes and adaptive scale.
+ * Color depends on height: green (lower third), yellow (middle), red (upper third).
+ * @param fixedA - Fixed value for the first operand (a).
+ * @param minB - Minimum value for b on the X axis.
+ * @param maxB - Maximum value for b on the X axis.
+ * @param width - Character width of the graph.
+ * @param height - Character height of the graph.
+ */
+function drawAdvancedGraph(fixedA: number, minB: number, maxB: number, width: number = 60, height: number = 20): void {
     const step = (maxB - minB) / width;
     const bValues: number[] = [];
     const results: number[] = [];
@@ -20,60 +33,57 @@ function drawAdvancedGraph(fixedA: number, minB: number, maxB: number, width: nu
     const minVal = Math.min(...results);
     const maxVal = Math.max(...results);
 
-    console.log(`\nГрафік біологічного множення для a=${fixedA} (b від ${minB} до ${maxB})\n`);
+    console.log(`\nBiological multiplication graph for a=${fixedA} (b from ${minB} to ${maxB})\n`);
 
     for (let row = height; row >= 0; row--) {
         const line = results.map(v => {
             const scaled = Math.round(((v - minVal) / (maxVal - minVal)) * height);
             if (scaled === row) {
-                // Колір залежить від висоти
-                if (row < height / 3) return '\x1b[32m*\x1b[0m';       // зелений
-                else if (row < (2 * height) / 3) return '\x1b[33m*\x1b[0m'; // жовтий
-                else return '\x1b[31m*\x1b[0m';                        // червоний
+                if (row < height / 3) return '\x1b[32m*\x1b[0m';
+                else if (row < (2 * height) / 3) return '\x1b[33m*\x1b[0m';
+                else return '\x1b[31m*\x1b[0m';
             } else return ' ';
         }).join('');
 
-        // Мітка по Y кожні кілька рядків
         const yLabel = row % 5 === 0 ? (minVal + ((maxVal - minVal) * row / height)).toFixed(2).padStart(7) : '       ';
         console.log(`${yLabel} | ${line}`);
     }
 
-    // Мітка осі X
-    let axis = '       +' + '-'.repeat(width + 2);
+    const axis = '       +' + '-'.repeat(width + 2);
     console.log(axis);
 
-    // Мітки X: мінімум, середина, максимум
     const midB = ((minB + maxB) / 2).toFixed(2).padStart(7);
     console.log(`        ${minB.toFixed(2)}${' '.repeat(width/2 - 7)}${midB}${' '.repeat(width/2 - 7)}${maxB.toFixed(2)}`);
     console.log('');
 }
 
-// Інтерфейс консолі
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-console.log("Біологічне множення (1*1=2) – просунутий графік");
+console.log("Biological multiplication (1*1=2) – advanced graph");
 
-// Запит користувача
+/**
+ * Prompts the user for a, min b, and max b, draws the graph, then asks whether to continue.
+ */
 function askNumbers(): void {
-    rl.question("Введи перше число (a): ", (inputA: string) => {
+    rl.question("Enter first number (a): ", (inputA: string) => {
         const a: number = parseFloat(inputA);
 
-        rl.question("Введи мінімальне значення другого числа (b): ", (inputMinB: string) => {
+        rl.question("Enter minimum value for second number (b): ", (inputMinB: string) => {
             const minB: number = parseFloat(inputMinB);
 
-            rl.question("Введи максимальне значення другого числа (b): ", (inputMaxB: string) => {
+            rl.question("Enter maximum value for second number (b): ", (inputMaxB: string) => {
                 const maxB: number = parseFloat(inputMaxB);
 
                 drawAdvancedGraph(a, minB, maxB);
 
-                rl.question("Хочеш ввести ще числа? (так/ні): ", (answer: string) => {
-                    if (answer.toLowerCase() === 'так' || answer.toLowerCase() === 'yes') {
+                rl.question("Enter more numbers? (yes/no): ", (answer: string) => {
+                    if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'так') {
                         askNumbers();
                     } else {
-                        console.log("Дякую! До зустрічі.");
+                        console.log("Thanks! Goodbye.");
                         rl.close();
                     }
                 });
@@ -82,6 +92,4 @@ function askNumbers(): void {
     });
 }
 
-// Старт програми
 askNumbers();
-

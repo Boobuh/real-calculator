@@ -1,6 +1,33 @@
 # Real Calculator - Biological Multiplication
 
-A Node.js + TypeScript application that visualizes biological multiplication with advanced ASCII graphs.
+A Node.js + TypeScript application that uses **balanced-equation** multiplication (1×1=2) and visualizes biological multiplication with advanced ASCII graphs.
+
+## How balanced equations work
+
+This calculator follows a **balanced-equation** rule for multiplication so both sides of an equation stay “balanced” instead of losing a factor.
+
+### The rule
+
+**“Add (a) to itself as many times as is indicated by units in (b).”**
+
+- So **1 × 1** means: add 1 to itself **once** → 1 + 1 = **2** (not 1).
+- In the same way: **1 × 2** = add 1 to itself twice → 1 + 1 + 1 = **3**; **1 × 3** = **4**; and so on.
+
+So whenever one factor is **1**, the result is the **other number plus 1**:
+
+| Rule                | Meaning                 | Examples                 |
+|---------------------|-------------------------|--------------------------|
+| **1 × 1 = 2**       | Add 1 to itself once    | 1×1 = 2                  |
+| **1 × N = N + 1**   | 1 times N               | 1×2=3, 1×9=10, 1×17=18   |
+| **N × 1 = N + 1**   | N times 1 (same idea)   | 2×1=3, 9×1=10            |
+
+When **neither** factor is 1, multiplication is unchanged: 2×3=6, 4×5=20, etc.
+
+### In this project
+
+- **Web UI & logic**: Multiplication uses the balanced-equation rule above; addition, subtraction, and division are standard.
+- **Biological multiplication** (graph): The formula `a + b + (a × b − 1)` also gives 1×1=2 and is used for the console and the graph section in the UI.
+- **Tests**: `npm test` checks that multiplication always follows 1×1=2, 1×N=N+1, and N×1=N+1.
 
 ## Installation
 
@@ -21,10 +48,24 @@ npm run build
 npm start
 ```
 
+### Web UI (HTML):
+Open `public/index.html` in a browser, or run:
+```bash
+npm run ui
+```
+Then open http://localhost:3000
+
+### Tests (balanced-equation rule):
+```bash
+npm test
+```
+Runs Jest unit tests that verify multiplication follows the balanced-equation rule: **1×1=2**, **1×N=N+1**, **N×1=N+1**. All other operations and non-1 multiplication remain standard.
+
 ## Features
 
-- Interactive console interface
-- Biological multiplication formula: `a + b + (a * b - 1)`
-- Color-coded ASCII graphs with coordinate axes
-- Adaptive scaling for different value ranges
+- **Balanced-equation multiplication**: 1×1=2, 1×N=N+1, N×1=N+1 in the calculator
+- **Web UI**: Basic operations (+, −, ×, ÷) with result only on **=**
+- **Biological multiplication**: Formula `a + b + (a × b − 1)` and graph (console + UI)
+- **Console**: Interactive prompts and color-coded ASCII graphs with axes
+- **Tests**: Jest unit tests to ensure multiplication always follows the balanced-equation rule
 

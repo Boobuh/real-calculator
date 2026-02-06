@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Calculator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem;
+      background: #1a1b26;
+      color: #c0caf5;
+      min-height: 100vh;
+    }
+    .calc {
+      background: #24283b;
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .calc-badge {
+      font-size: 0.7rem;
+      color: #565f89;
+      margin: 0 0 0.5rem 0;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .display-wrap {
+      background: #16161e;
+      border-radius: 10px;
+      padding: 0.75rem 1.25rem 1rem;
+      margin-bottom: 1.25rem;
+      min-height: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 0.25rem;
+    }
+    .pending-line {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #565f89;
+      min-height: 1.25em;
+      text-align: right;
+      width: 100%;
+    }
+    .display {
+      font-size: 1.875rem;
+      font-weight: 500;
+      color: #c0caf5;
+      word-break: break-all;
+      text-align: right;
+      min-height: 1.5em;
+      letter-spacing: 0.02em;
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+    .key {
+      min-height: 52px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.05s, background 0.15s;
+    }
+    .key:not(.key-zero):not(.key-eq) {
+      aspect-ratio: 1;
+    }
+    .key:active {
+      transform: scale(0.96);
+    }
+    .key-num {
+      background: #414868;
+      color: #c0caf5;
+    }
+    .key-num:hover {
+      background: #565f89;
+    }
+    .key-op {
+      background: #7aa2f7;
+      color: #1a1b26;
+    }
+    .key-op:hover {
+      background: #89b4fa;
+    }
+    .key-eq {
+      background: #9ece6a;
+      color: #1a1b26;
+      grid-row: span 2;
+      min-height: 0;
+    }
+    .key-eq:hover {
+      background: #b9f27c;
+    }
+    .key-clear {
+      background: #f7768e;
+      color: #1a1b26;
+    }
+    .key-clear:hover {
+      background: #ff9e9e;
+    }
+    .key-zero {
+      grid-column: span 2;
+      aspect-ratio: auto;
+      min-height: 52px;
+    }
+    .panel {
+      background: #24283b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-top: 1.25rem;
+    }
+    .panel h2 {
+      font-size: 0.95rem;
+      color: #a9b1d6;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+    .formula {
+      font-size: 0.75rem;
+      color: #565f89;
+      margin-bottom: 1rem;
+    }
+    .bio-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.75rem 1rem;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .field label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #a9b1d6;
+    }
+    .field input {
+      width: 100%;
+      min-width: 0;
+      padding: 0.5rem 0.65rem;
+      border: 2px solid #414868;
+      border-radius: 8px;
+      background: #16161e;
+      color: #c0caf5;
+      font-size: 1rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:hover {
+      border-color: #565f89;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: #7aa2f7;
+      box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.25);
+    }
+    .field input::placeholder {
+      color: #565f89;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      opacity: 1;
+    }
+    .bio-inputs .btn-bio {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+    @media (min-width: 380px) {
+      .bio-inputs {
+        grid-template-columns: repeat(3, 1fr) auto;
+      }
+      .bio-inputs .btn-bio {
+        grid-column: auto;
+        align-self: end;
+      }
+    }
+    .btn-bio {
+      padding: 0.55rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: #7aa2f7;
+      color: #1a1b26;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-bio:hover { background: #89b4fa; }
+    .btn-bio:active { transform: scale(0.98); }
+    .graph-wrap {
+      margin-top: 0.25rem;
+    }
+    .graph-placeholder {
+      background: #16161e;
+      border-radius: 8px;
+      border: 2px dashed #414868;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #565f89;
+      font-size: 0.85rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    #graphCanvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      border-radius: 8px;
+      background: #16161e;
+    }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <p class="calc-badge" aria-hidden="true">1×1=2 · Balanced equation</p>
+    <div class="display-wrap">
+      <div class="pending-line" id="pendingLine" aria-hidden="true"></div>
+      <div class="display" id="display" aria-live="polite">0</div>
+    </div>
+    <div class="keypad">
+      <button type="button" class="key key-clear" id="keyC" aria-label="Clear">C</button>
+      <button type="button" class="key key-op" id="keyDiv" aria-label="Divide">÷</button>
+      <button type="button" class="key key-op" id="keyMul" aria-label="Multiply">×</button>
+      <button type="button" class="key key-op" id="keySub" aria-label="Subtract">−</button>
+      <button type="button" class="key key-num" data-num="7">7</button>
+      <button type="button" class="key key-num" data-num="8">8</button>
+      <button type="button" class="key key-num" data-num="9">9</button>
+      <button type="button" class="key key-op" id="keyAdd" aria-label="Add">+</button>
+      <button type="button" class="key key-num" data-num="4">4</button>
+      <button type="button" class="key key-num" data-num="5">5</button>
+      <button type="button" class="key key-num" data-num="6">6</button>
+      <button type="button" class="key key-eq" id="keyEq" aria-label="Equals">=</button>
+      <button type="button" class="key key-num" data-num="1">1</button>
+      <button type="button" class="key key-num" data-num="2">2</button>
+      <button type="button" class="key key-num" data-num="3">3</button>
+      <button type="button" class="key key-num key-zero" data-num="0" id="key0">0</button>
+      <button type="button" class="key key-num" id="keyDot" aria-label="Decimal">.</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Biological multiplication graph</h2>
+    <p class="formula">result = a + b + (a × b − 1)</p>
+    <div class="bio-inputs">
+      <div class="field">
+        <label for="inputA">a</label>
+        <input type="number" id="inputA" value="2" step="any">
+      </div>
+      <div class="field">
+        <label for="inputMinB">Min b</label>
+        <input type="number" id="inputMinB" value="0" step="any">
+      </div>
+      <div class="field">
+        <label for="inputMaxB">Max b</label>
+        <input type="number" id="inputMaxB" value="5" step="any">
+      </div>
+      <button type="button" class="btn-bio" id="btnDraw">Draw graph</button>
+    </div>
+    <div class="graph-wrap">
+      <div class="graph-placeholder" id="graphPlaceholder">
+      Set a, min b, max b and click “Draw graph”.
+    </div>
+    <canvas id="graphCanvas" hidden width="320" height="220"></canvas>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Biological multiplication: result = a + b + (a * b - 1).
+     * @param {number} a - First operand.
+     * @param {number} b - Second operand.
+     * @returns {number} Computed value.
+     */
+    function bioMult(a, b) {
+      return a + b + (a * b - 1);
+    }
+
+    /**
+     * Draws the biological multiplication curve on a canvas with axes and color gradient by height
+     * (green for low values, yellow mid, red high).
+     * @param {number} fixedA - Fixed value for a.
+     * @param {number} minB - Minimum b on the X axis.
+     * @param {number} maxB - Maximum b on the X axis.
+     */
+    function drawGraph(fixedA, minB, maxB) {
+      const canvas = document.getElementById('graphCanvas');
+      const placeholder = document.getElementById('graphPlaceholder');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.round(rect.width * dpr);
+      const h = Math.round(rect.height * dpr);
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext('2d');
+      const padding = { top: 16, right: 16, bottom: 28, left: 40 };
+      const graphW = w - padding.left - padding.right;
+      const graphH = h - padding.top - padding.bottom;
+
+      const steps = 200;
+      const bValues = [];
+      const results = [];
+      for (let i = 0; i <= steps; i++) {
+        const b = minB + (i / steps) * (maxB - minB);
+        bValues.push(b);
+        results.push(bioMult(fixedA, b));
+      }
+
+      const minVal = Math.min(...results);
+      const maxVal = Math.max(...results);
+      const rangeY = maxVal - minVal || 1;
+      const rangeX = maxB - minB || 1;
+
+      ctx.fillStyle = '#1a1b26';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#414868';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top);
+      ctx.lineTo(padding.left, h - padding.bottom);
+      ctx.lineTo(w - padding.right, h - padding.bottom);
+      ctx.stroke();
+
+      ctx.fillStyle = '#565f89';
+      ctx.font = '10px system-ui, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(minVal.toFixed(2), padding.left - 6, h - padding.bottom + 4);
+      ctx.fillText(maxVal.toFixed(2), padding.left - 6, padding.top + 4);
+      ctx.textAlign = 'center';
+      ctx.fillText(minB.toFixed(2), padding.left, h - padding.bottom + 18);
+      ctx.fillText(maxB.toFixed(2), w - padding.right, h - padding.bottom + 18);
+
+      const toX = (b) => padding.left + ((b - minB) / rangeX) * graphW;
+      const toY = (v) => h - padding.bottom - ((v - minVal) / rangeY) * graphH;
+
+      for (let i = 0; i < results.length - 1; i++) {
+        const v = results[i];
+        const t = (v - minVal) / rangeY;
+        if (t < 1 / 3) ctx.strokeStyle = '#9ece6a';
+        else if (t < 2 / 3) ctx.strokeStyle = '#e0af68';
+        else ctx.strokeStyle = '#f7768e';
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(toX(bValues[i]), toY(results[i]));
+        ctx.lineTo(toX(bValues[i + 1]), toY(results[i + 1]));
+        ctx.stroke();
+      }
+
+      placeholder.hidden = true;
+      canvas.hidden = false;
+    }
+
+    /** Calculator state: current display, pending first value and operation; compute only on "=". */
+    let displayValue = '0';
+    let pendingOp = null;
+    let pendingVal = null;
+    let freshResult = false;
+
+    const displayEl = document.getElementById('display');
+    const pendingLineEl = document.getElementById('pendingLine');
+
+    function updateDisplay() {
+      displayEl.textContent = displayValue;
+      if (pendingOp !== null && pendingVal !== null) {
+        pendingLineEl.textContent = pendingVal + ' ' + pendingOp;
+        pendingLineEl.hidden = false;
+      } else {
+        pendingLineEl.textContent = '';
+        pendingLineEl.hidden = true;
+      }
+    }
+
+    function inputDigit(digit) {
+      if (freshResult) {
+        displayValue = digit;
+        freshResult = false;
+      } else {
+        if (displayValue === '0' && digit !== '.') displayValue = digit;
+        else displayValue += digit;
+      }
+      updateDisplay();
+    }
+
+    function inputDecimal() {
+      if (freshResult) {
+        displayValue = '0.';
+        freshResult = false;
+      } else if (!displayValue.includes('.')) {
+        displayValue += '.';
+      }
+      updateDisplay();
+    }
+
+    function clearAll() {
+      displayValue = '0';
+      pendingOp = null;
+      pendingVal = null;
+      freshResult = false;
+      updateDisplay();
+    }
+
+    /**
+     * Multiplication per balanced-equation rule: "Add (a) to itself as many times as units in (b)."
+     * So 1×1 = 1+1 = 2; 1×N = N+1; N×1 = N+1. Otherwise standard product.
+     */
+    function multiply(x, y) {
+      if (x === 1 || x === 1.0) return y + 1;
+      if (y === 1 || y === 1.0) return x + 1;
+      return x * y;
+    }
+
+    function compute(op, a, b) {
+      const x = parseFloat(a);
+      const y = parseFloat(b);
+      if (op === '+') return x + y;
+      if (op === '−') return x - y;
+      if (op === '×') return multiply(x, y);
+      if (op === '÷') return y === 0 ? NaN : x / y;
+      return y;
+    }
+
+    function applyOp(op) {
+      if (op === '=') {
+        if (pendingOp !== null && pendingVal !== null) {
+          const result = compute(pendingOp, pendingVal, displayValue);
+          displayValue = (Number.isNaN(result) || !Number.isFinite(result)) ? 'Error' : String(result);
+          pendingOp = null;
+          pendingVal = null;
+        }
+        freshResult = true;
+      } else {
+        pendingVal = displayValue;
+        pendingOp = op;
+        freshResult = true;
+      }
+      updateDisplay();
+    }
+
+    document.querySelectorAll('.key-num[data-num]').forEach(btn => {
+      btn.addEventListener('click', () => inputDigit(btn.dataset.num));
+    });
+    document.getElementById('keyDot').addEventListener('click', inputDecimal);
+    document.getElementById('keyC').addEventListener('click', clearAll);
+    document.getElementById('keyAdd').addEventListener('click', () => applyOp('+'));
+    document.getElementById('keySub').addEventListener('click', () => applyOp('−'));
+    document.getElementById('keyMul').addEventListener('click', () => applyOp('×'));
+    document.getElementById('keyDiv').addEventListener('click', () => applyOp('÷'));
+    document.getElementById('keyEq').addEventListener('click', () => applyOp('='));
+
+    document.getElementById('btnDraw').addEventListener('click', function () {
+      const a = parseFloat(document.getElementById('inputA').value) || 0;
+      const minB = parseFloat(document.getElementById('inputMinB').value) || 0;
+      const maxB = parseFloat(document.getElementById('inputMaxB').value) || 5;
+      if (minB >= maxB) return;
+      drawGraph(a, minB, maxB);
+    });
+  </script>
+</body>
+</html>
