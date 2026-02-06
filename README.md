@@ -49,7 +49,7 @@ npm start
 ```
 
 ### Web UI (HTML):
-Open `public/index.html` in a browser, or run:
+Run `npm run build` first (compiles TypeScript to `public/js/`). Then open `public/index.html` in a browser, or run:
 ```bash
 npm run ui
 ```

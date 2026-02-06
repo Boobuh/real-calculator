@@ -1,0 +1,141 @@
+/* Real Calculator – layout and keypad */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+  background: #1a1b26;
+  color: #c0caf5;
+  min-height: 100vh;
+}
+
+.calc {
+  background: #24283b;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.calc-badge {
+  font-size: 0.7rem;
+  color: #565f89;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.display-wrap {
+  background: #16161e;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem 1rem;
+  margin-bottom: 1.25rem;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.pending-line {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #565f89;
+  min-height: 1.25em;
+  text-align: right;
+  width: 100%;
+}
+
+.display {
+  font-size: 1.875rem;
+  font-weight: 500;
+  color: #c0caf5;
+  word-break: break-all;
+  text-align: right;
+  min-height: 1.5em;
+  letter-spacing: 0.02em;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.key {
+  min-height: 52px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.05s, background 0.15s;
+}
+
+.key:not(.key-zero):not(.key-eq) {
+  aspect-ratio: 1;
+}
+
+.key:active {
+  transform: scale(0.96);
+}
+
+.key-num {
+  background: #414868;
+  color: #c0caf5;
+}
+
+.key-num:hover {
+  background: #565f89;
+}
+
+.key-op {
+  background: #7aa2f7;
+  color: #1a1b26;
+}
+
+.key-op:hover {
+  background: #89b4fa;
+}
+
+.key-eq {
+  background: #9ece6a;
+  color: #1a1b26;
+  grid-row: span 2;
+  min-height: 0;
+}
+
+.key-eq:hover {
+  background: #b9f27c;
+}
+
+.key-clear {
+  background: #f7768e;
+  color: #1a1b26;
+}
+
+.key-clear:hover {
+  background: #ff9e9e;
+}
+
+.key-zero {
+  grid-column: span 2;
+  aspect-ratio: auto;
+  min-height: 52px;
+}
+
+.key-backspace {
+  background: #414868;
+  color: #c0caf5;
+  min-width: 0;
+}
+
+.key-backspace:hover {
+  background: #565f89;
+}
