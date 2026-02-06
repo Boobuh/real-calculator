@@ -25,8 +25,8 @@ When **neither** factor is 1, multiplication is unchanged: 2×3=6, 4×5=20, etc.
 
 ### In this project
 
-- **Web UI & logic**: Multiplication uses the balanced-equation rule above; addition, subtraction, and division are standard.
-- **Biological multiplication** (graph): The formula `a + b + (a × b − 1)` also gives 1×1=2 and is used for the console and the graph section in the UI.
+- **Web UI**: Multiplication uses the balanced-equation rule; addition, subtraction, and division are standard. Calculator only (no graph).
+- **Console** (`npm run dev`): Biological multiplication formula `a + b + (a × b − 1)` and ASCII graph.
 - **Tests**: `npm test` checks that multiplication always follows 1×1=2, 1×N=N+1, and N×1=N+1.
 
 ## Installation
@@ -65,7 +65,6 @@ Runs Jest unit tests that verify multiplication follows the balanced-equation ru
 
 - **Balanced-equation multiplication**: 1×1=2, 1×N=N+1, N×1=N+1 in the calculator
 - **Web UI**: Basic operations (+, −, ×, ÷) with result only on **=**
-- **Biological multiplication**: Formula `a + b + (a × b − 1)` and graph (console + UI)
-- **Console**: Interactive prompts and color-coded ASCII graphs with axes
+- **Console**: Biological multiplication formula and color-coded ASCII graphs (run with `npm run dev`)
 - **Tests**: Jest unit tests to ensure multiplication always follows the balanced-equation rule
 

@@ -113,6 +113,14 @@
       aspect-ratio: auto;
       min-height: 52px;
     }
+    .key-backspace {
+      background: #414868;
+      color: #c0caf5;
+      min-width: 0;
+    }
+    .key-backspace:hover {
+      background: #565f89;
+    }
   </style>
 </head>
 <body>
@@ -140,12 +148,10 @@
       <button type="button" class="key key-num" data-num="3">3</button>
       <button type="button" class="key key-num key-zero" data-num="0" id="key0">0</button>
       <button type="button" class="key key-num" id="keyDot" aria-label="Decimal">.</button>
+      <button type="button" class="key key-backspace" id="keyBackspace" aria-label="Backspace" title="Backspace">卍</button>
     </div>
   </div>
 
-    <div class="graph-wrap">
-      <div class="graph-placeholder" id="graphPlaceholder">
-      Set a, min b, max b and click “Draw graph”.
   <script>
     /** Calculator state: current display, pending first value and operation; compute only on "=". */
     let displayValue = '0';
@@ -196,6 +202,17 @@
       updateDisplay();
     }
 
+    function backspace() {
+      if (displayValue === 'Error') {
+        displayValue = '0';
+      } else if (displayValue.length > 1) {
+        displayValue = displayValue.slice(0, -1);
+      } else {
+        displayValue = '0';
+      }
+      updateDisplay();
+    }
+
     /**
      * Multiplication per balanced-equation rule: "Add (a) to itself as many times as units in (b)."
      * So 1×1 = 1+1 = 2; 1×N = N+1; N×1 = N+1. Otherwise standard product.
@@ -238,6 +255,7 @@
     });
     document.getElementById('keyDot').addEventListener('click', inputDecimal);
     document.getElementById('keyC').addEventListener('click', clearAll);
+    document.getElementById('keyBackspace').addEventListener('click', backspace);
     document.getElementById('keyAdd').addEventListener('click', () => applyOp('+'));
     document.getElementById('keySub').addEventListener('click', () => applyOp('−'));
     document.getElementById('keyMul').addEventListener('click', () => applyOp('×'));
